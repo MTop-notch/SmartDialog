@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-android-extensions")
+    id("maven-publish")
 }
 
 android {
@@ -53,4 +54,26 @@ dependencies {
 //    androidTestImplementation("androidx.test.ext:junit:1.2.1")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = "com.github"
+                artifactId = "mt"
+                version = "1.0.0"
+            }
+            repositories {
+                maven {
+                    name = "SmartDialog"
+                    url = uri("https://github.com/MTop-notch/SmartDialog.git")
+                    credentials {
+                        username = System.getenv("${properties["MAVEN_NAME"]}")
+                        password = System.getenv("${properties["MAVEN_TOKEN"]}")
+                    }
+                }
+            }
+        }
+    }
 }
