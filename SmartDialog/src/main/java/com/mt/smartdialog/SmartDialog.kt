@@ -86,7 +86,6 @@ fun AppCompatActivity.openDialog(dialogModel: DialogModel) {
     }
 }
 
-
 /**
  * くるくる設定
  * @return AlertDialog

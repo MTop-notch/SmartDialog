@@ -2,7 +2,13 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-android-extensions")
-    id("maven-publish")
+    `maven-publish`
+    id("cl.franciscosolis.sonatype-central-upload") version "1.0.2"
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 android {
@@ -39,13 +45,13 @@ android {
 
 dependencies {
 
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.4.2")
     implementation("com.google.android.material:material:1.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    implementation("androidx.cardview:cardview:1.0.0")
 
 //    implementation("androidx.core:core-ktx:1.13.1")
 //    implementation("androidx.appcompat:appcompat:1.7.0")
@@ -56,22 +62,53 @@ dependencies {
 
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                groupId = "com.github"
-                artifactId = "mt"
-                version = "1.0.0"
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            group = "com.mt"
+            artifactId = "SmartDialog"
+            version = "1.0.0"
+            afterEvaluate {
+                from(components["release"])
             }
-            repositories {
-                maven {
-                    name = "SmartDialog"
-                    url = uri("https://github.com/MTop-notch/SmartDialog.git")
-                    credentials {
-                        username = System.getenv("${properties["MAVEN_NAME"]}")
-                        password = System.getenv("${properties["MAVEN_TOKEN"]}")
+        }
+    }
+    repositories {
+        maven {
+            name = "SmartDialog"
+            url = uri(layout.buildDirectory.dir("repo"))
+        }
+    }
+}
+publishing {
+    publications {
+        register<MavenPublication>("maven") {
+            pom {
+                name.set(project.name)
+                // 説明
+                description.set("Custom assertion to check JSON string matches pattern.")
+                // URL
+                url.set("https://github.com/orangain/json-fuzzy-match")
+                // ライセンス
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://github.com/orangain/json-fuzzy-match/blob/master/LICENSE")
+                        distribution.set("repo")
                     }
+                }
+                // 開発者
+                developers {
+                    developer {
+                        id.set("MTop-notch")
+                        name.set("Masaki Taguchi")
+                        email.set("taguchi@corexia.co.jp")
+                    }
+                }
+                // バージョン管理システム
+                scm {
+                    url.set("https://github.com/orangain/json-fuzzy-match")
                 }
             }
         }
